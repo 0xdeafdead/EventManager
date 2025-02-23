@@ -3,7 +3,7 @@ import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 
 import { Participant } from '../../types';
 import { EventService } from './event.service';
-import { Event } from '../../types/event.model';
+import { Event } from '../../types/eventModel/event.model';
 import { CreateEventInput } from './dto/createEvent.input';
 import { GetOneEventInput } from './dto/getOneEvent.input';
 import { GetAllManagedInput } from './dto/getAllManaged.input';

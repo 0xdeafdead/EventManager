@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { catchError, from, Observable } from 'rxjs';
 
-import { User } from '../../types/user.model';
+import { User } from '../../types/userModel/user.model';
 import errorHandler from '../../utils/errrorHandler';
 import { UpdateUserInput } from './dto/update-user.input';
 import { CreateUserInput } from './dto/create-user.input';

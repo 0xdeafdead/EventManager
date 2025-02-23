@@ -41,9 +41,15 @@ importers:
       class-validator:
         specifier: ^0.14.1
         version: 0.14.1
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       graphql:
         specifier: ^16.10.0
         version: 16.10.0
+      jose:
+        specifier: ^6.0.4
+        version: 6.0.4
       mongoose:
         specifier: ^8.10.1
         version: 8.10.1
@@ -1844,6 +1850,9 @@ packages:
   cssfilter@0.0.10:
     resolution: {integrity: sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==}
 
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
     peerDependencies:
@@ -2687,6 +2696,9 @@ packages:
     peerDependenciesMeta:
       node-notifier:
         optional: true
+
+  jose@6.0.4:
+    resolution: {integrity: sha512-GTWKmlIq0xs50pnwa7q+8eG0ZLR1DVcHxa75s2VArJcriBd+YEC18uK/kbTObF3gMXgqBeZXAoZA9eMLhPjSpQ==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -5921,6 +5933,8 @@ snapshots:
 
   cssfilter@0.0.10: {}
 
+  dayjs@1.11.13: {}
+
   debug@2.6.9:
     dependencies:
       ms: 2.0.0
@@ -6981,6 +6995,8 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
+
+  jose@6.0.4: {}
 
   js-tokens@4.0.0: {}
 

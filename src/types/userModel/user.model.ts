@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Event } from './event.model';
+import { Event } from '../eventModel/event.model';
 
 export type UserDocument = HydratedDocument<User>;
 
