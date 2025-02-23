@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { createSecretKey, KeyObject } from 'crypto';
-import { JWTPayload, jwtVerify, JWTVerifyOptions, SignJWT } from 'jose';
+import * as jose from 'jose';
 
 import { JWTModuleConfig } from './jwt.types';
 import { JWT_MODULE_CONFIG } from './jwt.constants';
@@ -44,8 +44,8 @@ export class JWTService {
     const issuedAt = now.toDate();
     const expiresAt = now.add(24, 'hour').toDate();
     try {
-      return new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
+      return new jose.SignJWT(payload)
+        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
         .setIssuer(params?.issuer ?? this.issuer)
         .setAudience(params?.audience ?? this.audience)
         .setIssuedAt(params?.issuedAt ?? issuedAt)
@@ -61,10 +61,10 @@ export class JWTService {
 
   async verifyToken(
     token: string,
-    options?: JWTVerifyOptions,
-  ): Promise<JWTPayload> {
+    options?: jose.JWTVerifyOptions,
+  ): Promise<jose.JWTPayload> {
     try {
-      const { payload } = await jwtVerify<{ sub: string; role: string }>(
+      const { payload } = await jose.jwtVerify<{ sub: string; role: string }>(
         token,
         this.secret,
         options,

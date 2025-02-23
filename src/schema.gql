@@ -23,6 +23,10 @@ type Event {
   updatedAt: Float!
 }
 
+input GetUserByEmailInput {
+  email: String!
+}
+
 type Mutation {
   createEvent(createEventInput: CreateEventInput!): Event!
   createUser(createUserInput: CreateUserInput!): User!
@@ -31,6 +35,8 @@ type Mutation {
     id: String!
   ): Event!
   respondToEvent(respondToEventInput: RespondToEventInput!): Participant!
+  signIn(signInInput: SignInInput!): String!
+  signUp(signUpInput: SignUpInput!): String!
 }
 
 type Participant {
@@ -50,7 +56,7 @@ type Query {
   getAllManagedByUser(userId: String!): [Event!]!
   getAllUsers: [User!]!
   getOneEvent(id: String!): Event!
-  getUser(id: String!): User!
+  getUser(getUserByEmailInput: GetUserByEmailInput!): User!
 }
 
 input RespondToEventInput {
@@ -63,6 +69,17 @@ enum ResponseType {
   MAYBE
   NO
   YES
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input SignUpInput {
+  email: String!
+  fullName: String!
+  password: String!
 }
 
 type User {

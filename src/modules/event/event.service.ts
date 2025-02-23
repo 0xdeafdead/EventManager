@@ -1,14 +1,13 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateEventInput } from './dto/createEvent.input';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Query } from 'mongoose';
-import { Event, EventDocument, Participant, ResponseType } from '../../types';
+import { Model } from 'mongoose';
+import { Event, Participant, ResponseType } from '../../types';
 import { catchError, from, Observable, of, switchMap } from 'rxjs';
 import errorHandler from 'src/utils/errrorHandler';
 import { RespondToEventInput } from './dto/respondToEvent.input';
