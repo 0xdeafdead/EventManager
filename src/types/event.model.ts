@@ -9,8 +9,7 @@ export type EventDocument = HydratedDocument<Event>;
 @Schema()
 export class Event {
   @Field(() => String)
-  @Prop({ required: true, unique: true })
-  id: string;
+  _id: mongoose.Types.ObjectId;
 
   @Field(() => String)
   @Prop({ required: true })
@@ -20,17 +19,21 @@ export class Event {
   @Prop({ type: [Participant], required: true, default: [] })
   participants: Participant[];
 
-  @Field(() => Date)
+  @Field(() => Number)
   @Prop({ required: true })
-  createdAt: Date;
+  createdAt: number;
 
-  @Field(() => Date)
+  @Field(() => Number)
   @Prop({ required: true })
-  updatedAt: Date;
+  updatedAt: number;
 
   @Field(() => String)
-  @Prop({ required: true, type: mongoose.Schema.Types.String, ref: 'User' })
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   owner: string;
+
+  @Field(() => Boolean)
+  @Prop({ required: true })
+  isActive: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

@@ -2,22 +2,72 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateEventInput {
+  guests: [ParticipantInput!]!
+  ownerId: String!
+  title: String!
+}
+
 input CreateUserInput {
   email: String!
   fullName: String!
 }
 
+type Event {
+  _id: String!
+  createdAt: Float!
+  isActive: Boolean!
+  owner: String!
+  participants: [Participant!]!
+  title: String!
+  updatedAt: Float!
+}
+
 type Mutation {
+  createEvent(createEventInput: CreateEventInput!): Event!
   createUser(createUserInput: CreateUserInput!): User!
+  freezeEvent(
+    """Event id"""
+    id: String!
+  ): Event!
+  respondToEvent(respondToEventInput: RespondToEventInput!): Participant!
+}
+
+type Participant {
+  email: String!
+  fullName: String!
+  response: ResponseType!
+  updatedAt: Float!
+}
+
+input ParticipantInput {
+  email: String!
+  fullName: String!
 }
 
 type Query {
+  getAllInvitedByUser(email: String!): [Event!]!
+  getAllManagedByUser(userId: String!): [Event!]!
   getAllUsers: [User!]!
+  getOneEvent(id: String!): Event!
   getUser(id: String!): User!
+}
+
+input RespondToEventInput {
+  email: String!
+  eventId: String!
+  response: ResponseType!
+}
+
+enum ResponseType {
+  MAYBE
+  NO
+  YES
 }
 
 type User {
   _id: String!
   email: String!
+  events: [Event!]!
   fullName: String!
 }

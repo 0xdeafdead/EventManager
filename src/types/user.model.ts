@@ -1,6 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Mongoose } from 'mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
+import { Event } from './event.model';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -18,9 +20,9 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  //   @Field(() => [Event])
-  //   @Prop({ required: true, type: [Event], default: [] })
-  //   events: Event[];
+  @Field(() => [Event], { defaultValue: [] })
+  @Prop({ required: true, type: [Event], default: [] })
+  events: Event[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

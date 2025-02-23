@@ -9,7 +9,6 @@ export default function errorHandler(
 ) {
   if (err instanceof mongoose.mongo.MongoError) {
     if (err.code === 11000) {
-      console.log('error', err.stack);
       err = new BadRequestException(`Duplicate key error:${err.cause}`);
     }
   }
