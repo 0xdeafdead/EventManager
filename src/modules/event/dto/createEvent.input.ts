@@ -1,12 +1,5 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { ParticipantInput } from './participant.input';
 
 @InputType()
