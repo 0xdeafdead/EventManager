@@ -28,8 +28,8 @@ export class Event {
   updatedAt: number;
 
   @Field(() => String)
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  owner: string;
+  @Prop({ required: true, type: mongoose.Schema.Types.String, ref: 'User' })
+  ownerEmail: string;
 
   @Field(() => Boolean)
   @Prop({ required: true })

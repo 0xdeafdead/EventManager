@@ -4,32 +4,21 @@
 
 input CreateEventInput {
   guests: [ParticipantInput!]!
-  ownerId: String!
   title: String!
-}
-
-input CreateUserInput {
-  email: String!
-  fullName: String!
 }
 
 type Event {
   _id: String!
   createdAt: Float!
   isActive: Boolean!
-  owner: String!
+  ownerEmail: String!
   participants: [Participant!]!
   title: String!
   updatedAt: Float!
 }
 
-input GetUserByEmailInput {
-  email: String!
-}
-
 type Mutation {
   createEvent(createEventInput: CreateEventInput!): Event!
-  createUser(createUserInput: CreateUserInput!): User!
   freezeEvent(
     """Event id"""
     id: String!
@@ -52,15 +41,12 @@ input ParticipantInput {
 }
 
 type Query {
-  getAllInvitedByUser(email: String!): [Event!]!
-  getAllManagedByUser(userId: String!): [Event!]!
-  getAllUsers: [User!]!
+  getAllRelatedEvents: [Event!]!
   getOneEvent(id: String!): Event!
-  getUser(getUserByEmailInput: GetUserByEmailInput!): User!
+  getUser: User!
 }
 
 input RespondToEventInput {
-  email: String!
   eventId: String!
   response: ResponseType!
 }

@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateEventInput } from './dto/createEvent.input';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,42 +12,16 @@ import { Event, Participant, ResponseType } from '../../types';
 import { catchError, from, Observable, of, switchMap } from 'rxjs';
 import errorHandler from 'src/utils/errrorHandler';
 import { RespondToEventInput } from './dto/respondToEvent.input';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class EventService {
   logger = new Logger('EventService');
   constructor(
     @InjectModel(Event.name) private readonly eventModel: Model<Event>,
+    private readonly userService: UserService,
   ) {}
 
-  create(createEventInput: CreateEventInput): Observable<Event> {
-    const { ownerId, guests, title } = createEventInput;
-    const now = Date.now();
-    const participants: Participant[] = guests.map(({ fullName, email }) => ({
-      fullName,
-      email,
-      response: ResponseType.NO,
-      updatedAt: now,
-    }));
-    const event = new this.eventModel({
-      title,
-      participants,
-      owner: ownerId,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-    });
-    return from(event.save()).pipe(
-      catchError((error: Error) => {
-        this.logger.error(error);
-        return errorHandler(error, this.logger, 'Error creating event');
-      }),
-    );
-  }
-
-  // findAll() {
-  //   return `This action returns all event`;
-  // }
   private _findOne(id: string) {
     return from(this.eventModel.findById(id)).pipe(
       switchMap((event) => {
@@ -62,6 +37,34 @@ export class EventService {
     );
   }
 
+  create(
+    createEventInput: CreateEventInput,
+    currentUserEmail: string,
+  ): Observable<Event> {
+    const { guests, title } = createEventInput;
+    const now = Date.now();
+    const participants: Participant[] = guests.map(({ fullName, email }) => ({
+      fullName,
+      email,
+      response: ResponseType.NO,
+      updatedAt: now,
+    }));
+    const event = new this.eventModel({
+      title,
+      participants,
+      ownerEmail: currentUserEmail,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return from(event.save()).pipe(
+      catchError((error: Error) => {
+        this.logger.error(error);
+        return errorHandler(error, this.logger, 'Error creating event');
+      }),
+    );
+  }
+
   findOne(id: string): Observable<Event> {
     return this._findOne(id).pipe(
       catchError((error: Error) => {
@@ -71,18 +74,34 @@ export class EventService {
     );
   }
 
-  findAllManagerByUser(userId: string): Observable<Event[]> {
-    return from(this.eventModel.find({ owner: userId }).exec()).pipe(
-      catchError((error: Error) => {
-        this.logger.error(error);
-        return errorHandler(error, this.logger, 'Error fetching events');
-      }),
-    );
-  }
+  // findAllManagerByUser(userEmail: string): Observable<Event[]> {
+  //   return from(this.eventModel.find({ ownerEmail: userEmail }).exec()).pipe(
+  //     catchError((error: Error) => {
+  //       this.logger.error(error);
+  //       return errorHandler(error, this.logger, 'Error fetching events');
+  //     }),
+  //   );
+  // }
 
-  findAllInvitedByUser(email: string): Observable<Event[]> {
+  // findAllInvitedByUser(email: string): Observable<Event[]> {
+  //   return from(
+  //     this.eventModel.find<Event>({ 'participants.email': email }).exec(),
+  //   ).pipe(
+  //     catchError((error: Error) => {
+  //       this.logger.error(error);
+  //       return errorHandler(error, this.logger, 'Error fetching events');
+  //     }),
+  //   );
+  // }
+
+  findAllRelatedEvents(currentUserEmail: string): Observable<Event[]> {
     return from(
-      this.eventModel.find<Event>({ 'participants.email': email }).exec(),
+      this.eventModel
+        .find<Event>({
+          ownerEmail: currentUserEmail,
+          'participants.email': currentUserEmail,
+        })
+        .exec(),
     ).pipe(
       catchError((error: Error) => {
         this.logger.error(error);
@@ -91,9 +110,15 @@ export class EventService {
     );
   }
 
-  freezeEvent(id: string): Observable<Event> {
+  freezeEvent(id: string, currentUserEmail: string): Observable<Event> {
     return this._findOne(id).pipe(
       switchMap((event) => {
+        if (event.ownerEmail !== currentUserEmail) {
+          throw new UnauthorizedException(
+            'You are not the owner of this event',
+          );
+        }
+
         if (event.isActive) {
           event.set({ isActive: false });
           return from(event.save());
@@ -108,15 +133,18 @@ export class EventService {
     );
   }
 
-  respondToEvent(input: RespondToEventInput): Observable<Participant> {
-    const { eventId, email, response } = input;
+  respondToEvent(
+    input: RespondToEventInput,
+    currentUserEmail: string,
+  ): Observable<Participant> {
+    const { eventId, response } = input;
     return this._findOne(eventId).pipe(
       switchMap((event) => {
         if (!event.isActive) {
           throw new BadRequestException('Event is on hold');
         }
         const participant = event.participants.find(
-          (participant) => participant.email === email,
+          (participant) => participant.email === currentUserEmail,
         );
         if (!participant) {
           throw new NotFoundException(

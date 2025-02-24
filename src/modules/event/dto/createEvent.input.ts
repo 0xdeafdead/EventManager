@@ -4,12 +4,6 @@ import { ParticipantInput } from './participant.input';
 
 @InputType()
 export class CreateEventInput {
-  //TODO: Remove when auth implemented
-  @IsString()
-  @IsNotEmpty()
-  @Field(() => String)
-  ownerId: number;
-
   @IsString()
   @IsNotEmpty()
   @Field(() => String)

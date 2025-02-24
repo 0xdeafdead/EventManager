@@ -8,10 +8,6 @@ export class RespondToEventInput {
   @Field(() => String)
   eventId: string;
 
-  @IsEmail()
-  @Field(() => String)
-  email: string;
-
   @IsEnum(ResponseType)
   @Field(() => ResponseType)
   response: ResponseType;

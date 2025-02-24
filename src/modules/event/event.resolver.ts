@@ -1,14 +1,15 @@
 import { Observable } from 'rxjs';
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 
-import { Participant } from '../../types';
+import { AuthRequestPayload, Participant } from '../../types';
 import { EventService } from './event.service';
 import { Event } from '../../types/eventModel/event.model';
 import { CreateEventInput } from './dto/createEvent.input';
 import { GetOneEventInput } from './dto/getOneEvent.input';
-import { GetAllManagedInput } from './dto/getAllManaged.input';
-import { GetAllInvitedInput } from './dto/getAllInvited.input';
 import { RespondToEventInput } from './dto/respondToEvent.input';
+import { UseGuards } from '@nestjs/common';
+import { JWTGuard } from 'src/guards/JWTGuard.guard';
+import { CurrentUser } from 'src/decorators/CurrentUser.decorator';
 
 @Resolver(() => Event)
 export class EventResolver {
@@ -19,36 +20,57 @@ export class EventResolver {
     return this.eventService.findOne(getOneEventInput.id);
   }
 
-  @Query(() => [Event])
-  getAllManagedByUser(
-    @Args() getAllManagedByUser: GetAllManagedInput,
-  ): Observable<Event[]> {
-    return this.eventService.findAllManagerByUser(getAllManagedByUser.userId);
-  }
+  // @Query(() => [Event])
+  // @UseGuards(JWTGuard)
+  // getAllManagedByUser(
+  //   @Args() getAllManagedByUser: GetAllManagedInput,
+  // ): Observable<Event[]> {
+  //   return this.eventService.findAllManagerByUser(getAllManagedByUser.userId);
+  // }
+
+  // @Query(() => [Event])
+  // @UseGuards(JWTGuard)
+  // getAllInvitedByUser(
+  //   @CurrentUser() currenUser: AuthRequestPayload,
+  // ): Observable<Event[]> {
+  //   return this.eventService.findAllInvitedByUser(currenUser.sub);
+  // }
 
   @Query(() => [Event])
-  getAllInvitedByUser(
-    @Args() getAllInvitedInput: GetAllInvitedInput,
+  @UseGuards(JWTGuard)
+  getAllRelatedEvents(
+    @CurrentUser() currenUser: AuthRequestPayload,
   ): Observable<Event[]> {
-    return this.eventService.findAllInvitedByUser(getAllInvitedInput.email);
+    return this.eventService.findAllRelatedEvents(currenUser.sub);
   }
 
   @Mutation(() => Event)
+  @UseGuards(JWTGuard)
   createEvent(
     @Args('createEventInput') createEventInput: CreateEventInput,
+    @CurrentUser() currenUser: AuthRequestPayload,
   ): Observable<Event> {
-    return this.eventService.create(createEventInput);
+    return this.eventService.create(createEventInput, currenUser.sub);
   }
 
   @Mutation(() => Event)
-  freezeEvent(@Args('id', { description: 'Event id' }) id: string) {
-    return this.eventService.freezeEvent(id);
+  @UseGuards(JWTGuard)
+  freezeEvent(
+    @Args('id', { description: 'Event id' }) id: string,
+    @CurrentUser() currenUser: AuthRequestPayload,
+  ): Observable<Event> {
+    return this.eventService.freezeEvent(id, currenUser.sub);
   }
 
   @Mutation(() => Participant)
+  @UseGuards(JWTGuard)
   respondToEvent(
     @Args('respondToEventInput') respondToEventInput: RespondToEventInput,
+    @CurrentUser() currenUser: AuthRequestPayload,
   ): Observable<Participant> {
-    return this.eventService.respondToEvent(respondToEventInput);
+    return this.eventService.respondToEvent(
+      respondToEventInput,
+      currenUser.sub,
+    );
   }
 }
