@@ -1,5 +1,11 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { ParticipantInput } from './participant.input';
 
 @InputType()
@@ -8,6 +14,10 @@ export class CreateEventInput {
   @IsNotEmpty()
   @Field(() => String)
   title: string;
+
+  @IsNumber()
+  @Field(() => Number)
+  date: number;
 
   @IsArray()
   @ArrayNotEmpty()

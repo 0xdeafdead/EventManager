@@ -15,6 +15,10 @@ export class Event {
   @Prop({ required: true })
   title: string;
 
+  @Field(() => Number)
+  @Prop({ required: true })
+  date: number;
+
   @Field(() => [Participant], { defaultValue: [] })
   @Prop({ type: [Participant], required: true, default: [] })
   participants: Participant[];

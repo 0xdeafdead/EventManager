@@ -1,20 +1,26 @@
+import { Observable } from 'rxjs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+
 import { AuthService } from './auth.service';
 import { SignInInput } from './dto/signIn.input';
 import { SignUpInput } from './dto/signUp.input';
-import { Observable } from 'rxjs';
+import { SessionData } from '../../types';
 
-@Resolver(() => String)
+@Resolver(() => SessionData)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => String)
-  signIn(@Args('signInInput') signInInput: SignInInput): Observable<String> {
+  @Mutation(() => SessionData)
+  signIn(
+    @Args('signInInput') signInInput: SignInInput,
+  ): Observable<SessionData> {
     return this.authService.signIn(signInInput);
   }
 
-  @Mutation(() => String)
-  signUp(@Args('signUpInput') signUpInput: SignUpInput): Observable<String> {
+  @Mutation(() => SessionData)
+  signUp(
+    @Args('signUpInput') signUpInput: SignUpInput,
+  ): Observable<SessionData> {
     return this.authService.signUp(signUpInput);
   }
 }

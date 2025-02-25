@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 
 input CreateEventInput {
+  date: Float!
   guests: [ParticipantInput!]!
   title: String!
 }
@@ -10,6 +11,7 @@ input CreateEventInput {
 type Event {
   _id: String!
   createdAt: Float!
+  date: Float!
   isActive: Boolean!
   ownerEmail: String!
   participants: [Participant!]!
@@ -24,8 +26,8 @@ type Mutation {
     id: String!
   ): Event!
   respondToEvent(respondToEventInput: RespondToEventInput!): Participant!
-  signIn(signInInput: SignInInput!): String!
-  signUp(signUpInput: SignUpInput!): String!
+  signIn(signInInput: SignInInput!): SessionData!
+  signUp(signUpInput: SignUpInput!): SessionData!
 }
 
 type Participant {
@@ -55,6 +57,12 @@ enum ResponseType {
   MAYBE
   NO
   YES
+}
+
+type SessionData {
+  email: String!
+  fullName: String!
+  token: String!
 }
 
 input SignInInput {

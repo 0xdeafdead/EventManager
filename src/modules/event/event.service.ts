@@ -41,7 +41,7 @@ export class EventService {
     createEventInput: CreateEventInput,
     currentUserEmail: string,
   ): Observable<Event> {
-    const { guests, title } = createEventInput;
+    const { guests, title, date } = createEventInput;
     const now = Date.now();
     const participants: Participant[] = guests.map(({ fullName, email }) => ({
       fullName,
@@ -52,6 +52,7 @@ export class EventService {
     const event = new this.eventModel({
       title,
       participants,
+      date,
       ownerEmail: currentUserEmail,
       isActive: true,
       createdAt: now,
@@ -98,8 +99,10 @@ export class EventService {
     return from(
       this.eventModel
         .find<Event>({
-          ownerEmail: currentUserEmail,
-          'participants.email': currentUserEmail,
+          $or: [
+            { ownerEmail: currentUserEmail },
+            { 'participants.email': currentUserEmail },
+          ],
         })
         .exec(),
     ).pipe(
@@ -119,12 +122,8 @@ export class EventService {
           );
         }
 
-        if (event.isActive) {
-          event.set({ isActive: false });
-          return from(event.save());
-        } else {
-          throw new BadRequestException('Event is already on hold');
-        }
+        event.set({ isActive: !event.isActive, updatedAt: Date.now() });
+        return from(event.save());
       }),
       catchError((error: Error) => {
         this.logger.error(error);

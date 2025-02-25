@@ -1,7 +1,7 @@
 import { JWTService } from '@app/jwt';
 import mongoose, { Model } from 'mongoose';
 import { genSalt, hash, compare } from 'bcryptjs';
-import { catchError, from, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, from, Observable, switchMap } from 'rxjs';
 import {
   Injectable,
   Logger,
@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { Credential, User } from '../../types';
+import { Credential, SessionData, User } from '../../types';
 import { SignInInput } from './dto/signIn.input';
 import { SignUpInput } from './dto/signUp.input';
 import { UserService } from '../user/user.service';
-import errorHandler from 'src/utils/errrorHandler';
+import errorHandler from '../../utils/errrorHandler';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +42,7 @@ export class AuthService {
     }
   }
 
-  signIn(input: SignInInput): Observable<string> {
+  signIn(input: SignInInput): Observable<SessionData> {
     const { email, password } = input;
     return from(this.verifyPassword(email, password)).pipe(
       switchMap((isVerified) => {
@@ -55,9 +55,15 @@ export class AuthService {
         if (!user) {
           throw new NotFoundException(`User with email ${email} not found.`);
         }
-        return this.jwtService.generateToken({
-          sub: user.email,
-        });
+        return this.jwtService
+          .generateToken({
+            sub: user.email,
+          })
+          .then((token) => ({
+            token,
+            email: user.email,
+            fullName: user.fullName,
+          }));
       }),
       catchError((err) => {
         const errMsg = `The user or password is wrong`;
@@ -88,7 +94,7 @@ export class AuthService {
     }
   }
 
-  async _signUp(input: SignUpInput): Promise<string> {
+  async _signUp(input: SignUpInput): Promise<SessionData> {
     const session = await this.connection.startSession();
     session.startTransaction();
     try {
@@ -100,7 +106,12 @@ export class AuthService {
       await newUser.save({ session });
       await this.storePassword(email, password, session);
       await session.commitTransaction();
-      return this.jwtService.generateToken({ sub: email });
+      const token = await this.jwtService.generateToken({ sub: email });
+      return {
+        token,
+        email,
+        fullName,
+      };
     } catch (err) {
       await session.abortTransaction();
       throw err;
@@ -109,7 +120,7 @@ export class AuthService {
     }
   }
 
-  signUp(input: SignUpInput): Observable<string> {
+  signUp(input: SignUpInput): Observable<SessionData> {
     const { email } = input;
     return from(this._signUp(input)).pipe(
       catchError((err) => {

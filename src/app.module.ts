@@ -17,7 +17,7 @@ import { envs } from './config/envs';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
-      introspection: true,
+      introspection: envs.app_env == 'dev',
     }),
     MongooseModule.forRoot(envs.mongoAtlasUri, {
       autoCreate: true,
