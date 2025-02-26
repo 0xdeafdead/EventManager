@@ -13,11 +13,11 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
   create(createUserInput: CreateUserInput): Observable<User> {
     const { email, fullName } = createUserInput;
-    const user = new this.userModel({
+    const user = this.userModel.create({
       email,
       fullName,
     });
-    return from(user.save()).pipe(
+    return from(user).pipe(
       catchError((error) => {
         return errorHandler(error, this.logger, 'Error creating user');
       }),
@@ -32,7 +32,7 @@ export class UserService {
     );
   }
 
-  private _findOne(email: string) {
+  _findOne(email: string) {
     return from(this.userModel.findOne({ email }).exec()).pipe(
       switchMap((user) => {
         if (!user) {
@@ -40,8 +40,7 @@ export class UserService {
         }
         return of(user);
       }),
-      catchError((error: Error) => {
-        this.logger.error(error);
+      catchError((error) => {
         return errorHandler(error, this.logger, 'Error fetching user');
       }),
     );
