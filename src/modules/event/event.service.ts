@@ -75,26 +75,6 @@ export class EventService {
     );
   }
 
-  // findAllManagerByUser(userEmail: string): Observable<Event[]> {
-  //   return from(this.eventModel.find({ ownerEmail: userEmail }).exec()).pipe(
-  //     catchError((error: Error) => {
-  //       this.logger.error(error);
-  //       return errorHandler(error, this.logger, 'Error fetching events');
-  //     }),
-  //   );
-  // }
-
-  // findAllInvitedByUser(email: string): Observable<Event[]> {
-  //   return from(
-  //     this.eventModel.find<Event>({ 'participants.email': email }).exec(),
-  //   ).pipe(
-  //     catchError((error: Error) => {
-  //       this.logger.error(error);
-  //       return errorHandler(error, this.logger, 'Error fetching events');
-  //     }),
-  //   );
-  // }
-
   findAllRelatedEvents(currentUserEmail: string): Observable<Event[]> {
     return from(
       this.eventModel

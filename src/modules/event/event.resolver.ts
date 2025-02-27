@@ -20,22 +20,6 @@ export class EventResolver {
     return this.eventService.findOne(getOneEventInput.id);
   }
 
-  // @Query(() => [Event])
-  // @UseGuards(JWTGuard)
-  // getAllManagedByUser(
-  //   @Args() getAllManagedByUser: GetAllManagedInput,
-  // ): Observable<Event[]> {
-  //   return this.eventService.findAllManagerByUser(getAllManagedByUser.userId);
-  // }
-
-  // @Query(() => [Event])
-  // @UseGuards(JWTGuard)
-  // getAllInvitedByUser(
-  //   @CurrentUser() currenUser: AuthRequestPayload,
-  // ): Observable<Event[]> {
-  //   return this.eventService.findAllInvitedByUser(currenUser.sub);
-  // }
-
   @Query(() => [Event])
   @UseGuards(JWTGuard)
   getAllRelatedEvents(
